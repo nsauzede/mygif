@@ -54,9 +54,13 @@ int main( int argc, char *argv[])
 	header_t header;
 	logical_screen_descriptor_t logical_screen_descriptor;
 	image_descriptor_t image_descriptor;
-	read( fd, &header, sizeof( header));
+	size_t size = sizeof( header);
+	read( fd, &header, size);
+	printf( "header: %zd bytes\n", size);
 	printf( "signature=%c%c%c version=%c%c%c\n", header.signature[0], header.signature[1], header.signature[2], header.version[0], header.version[1], header.version[2]);
-	read( fd, &logical_screen_descriptor, sizeof( logical_screen_descriptor));
+	size = sizeof( logical_screen_descriptor);
+	read( fd, &logical_screen_descriptor, size);
+	printf( "logical screen descriptor: %zd bytes\n", size);
 	printf( "width=%" PRIu16 " height=%" PRIu16 "\n", logical_screen_descriptor.width, logical_screen_descriptor.height);
 	printf( "glbl=%d color=%d sort=%d size=%d\n", (int)logical_screen_descriptor.glbl, (int)logical_screen_descriptor.color, (int)logical_screen_descriptor.sort, (int)logical_screen_descriptor.size);
 	printf( "bckgnd=%" PRIu8 " pixel_aspect_ratio=%" PRIu8 "\n", logical_screen_descriptor.bckgnd, logical_screen_descriptor.pixel_aspect_ratio);
