@@ -32,6 +32,12 @@ typedef struct {
 
 #pragma pack()
 
+void fd_info( int fd)
+{
+	printf( "-----------\n");
+	printf( "[pos=%" PRIx32 "]\n", (uint32_t)lseek( fd, 0, SEEK_CUR));
+}
+
 int main( int argc, char *argv[])
 {
 	char *file = 0;
@@ -55,16 +61,19 @@ int main( int argc, char *argv[])
 	logical_screen_descriptor_t logical_screen_descriptor;
 	image_descriptor_t image_descriptor;
 	size_t size = sizeof( header);
+	fd_info( fd);
+	printf( "reading header.. (%d)\n", (int)size);
 	read( fd, &header, size);
 	printf( "header: %zd bytes\n", size);
 	printf( "signature=%c%c%c version=%c%c%c\n", header.signature[0], header.signature[1], header.signature[2], header.version[0], header.version[1], header.version[2]);
 	size = sizeof( logical_screen_descriptor);
+	fd_info( fd);
+	printf( "reading logical screen descriptor.. (%d)\n", (int)size);
 	read( fd, &logical_screen_descriptor, size);
 	printf( "logical screen descriptor: %zd bytes\n", size);
 	printf( "width=%" PRIu16 " height=%" PRIu16 "\n", logical_screen_descriptor.width, logical_screen_descriptor.height);
 	printf( "glbl=%d color=%d sort=%d size=%d\n", (int)logical_screen_descriptor.glbl, (int)logical_screen_descriptor.color, (int)logical_screen_descriptor.sort, (int)logical_screen_descriptor.size);
 	printf( "bckgnd=%" PRIu8 " pixel_aspect_ratio=%" PRIu8 "\n", logical_screen_descriptor.bckgnd, logical_screen_descriptor.pixel_aspect_ratio);
-	printf( "-----------\n");
 	int i;
 	int bpp = 1;
 	for (i = 0; i < logical_screen_descriptor.color; i++)
@@ -81,10 +90,13 @@ int main( int argc, char *argv[])
 	if (logical_screen_descriptor.glbl)
 	{
 		void *pal = malloc( psize);
+		fd_info( fd);
+		printf( "reading palette.. (%d)\n", (int)psize);
 		read( fd, pal, psize);
-		printf( "reading palette..\n");
 		free( pal);
 	}
+	fd_info( fd);
+	printf( "reading image descriptor.. (%d)\n", (int)size);
 	read( fd, &image_descriptor, sizeof( image_descriptor));
 	printf( "sep=%" PRIx8 " left=%" PRIu16 " top=%" PRIu16 " width=%" PRIu16 " height=%" PRIu16 "\n", image_descriptor.img_sep, image_descriptor.img_left_pos, image_descriptor.img_top_pos, image_descriptor.img_width, image_descriptor.img_height);
 	close( fd);
